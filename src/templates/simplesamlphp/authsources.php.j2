@@ -1,0 +1,17 @@
+<?php
+
+$config = array(
+
+    'admin' => array(
+        'core:AdminPassword',
+    ),
+
+    'example-userpass' => array(
+        'exampleauth:UserPass',
+        '{{ user_name }}:{{ user_password }}' => array(
+            'uid' => array('1'),
+            'eduPersonAffiliation' => array('group1'),
+            'email' => '{{ user_name }}@example.com',
+        ),
+    ),
+);

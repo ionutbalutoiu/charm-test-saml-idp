@@ -1,0 +1,19 @@
+# Copyright 2021 Ionut Balutoiu
+# See LICENSE file for licensing details.
+#
+name: test-saml-idp
+summary: Test SAML IDP
+description: |
+  This charm will setup a dummy php-based IDP using the SimpleSAMLphp project.
+  This is NOT recommended to be used in production. It should be used only
+  for testing purposes.
+series:
+  - bionic
+  - focal
+resources:
+  sp-metadata:
+    type: file
+    filename: sp-metadata.xml
+    description: |
+      Service Provider metadata XML file that conforms to
+      saml-metadata-2.0-os specification.

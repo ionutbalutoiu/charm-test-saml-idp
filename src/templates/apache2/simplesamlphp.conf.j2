@@ -1,0 +1,22 @@
+<VirtualHost *:{{ http_port }}>
+    ServerName localhost
+    DocumentRoot /var/simplesamlphp
+    SetEnv SIMPLESAMLPHP_CONFIG_DIR /var/simplesamlphp/config
+    Alias /simplesaml /var/simplesamlphp/www
+    <Directory /var/simplesamlphp/www>
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+<VirtualHost *:{{ https_port }}>
+    ServerName localhost
+    DocumentRoot /var/simplesamlphp
+    SSLEngine on
+    SSLCertificateFile /etc/apache2/ssl/cert.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/private.key
+    SetEnv SIMPLESAMLPHP_CONFIG_DIR /var/simplesamlphp/config
+    Alias /simplesaml /var/simplesamlphp/www
+    <Directory /var/simplesamlphp/www>
+        Require all granted
+    </Directory>
+</VirtualHost>

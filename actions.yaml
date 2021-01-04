@@ -1,0 +1,7 @@
+# Copyright 2021 Ionut Balutoiu
+# See LICENSE file for licensing details.
+#
+get-idp-metadata:
+  description: |
+    Display the Identity Provider metadata to be exchanged with the Service
+    Provider.

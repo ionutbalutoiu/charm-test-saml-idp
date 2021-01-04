@@ -1,0 +1,36 @@
+# Copyright 2021 Ionut Balutoiu
+# See LICENSE file for licensing details.
+#
+options:
+  simple-saml-php-version:
+    type: string
+    default: '1.18.8'
+    description: The release version of the SimpleSAMLphp.
+  http-port:
+    type: int
+    default: 80
+    description: The IDP http port.
+  https-port:
+    type: int
+    default: 443
+    description: The IDP https port.
+  auth-user-name:
+    type: string
+    default: user1
+    description: The auth user name.
+  auth-user-password:
+    type: string
+    default: user1pass
+    description: The auth user password.
+  idp-name:
+    type: string
+    default: myidp
+    description: |
+      Identity provider name to use for URL generation. Must match the one
+      that will be configured via OS-FEDERATION API.
+  protocol-name:
+    type: string
+    default: mapped
+    description: |
+      Protocol name to use for URL and generation. Must match the one that
+      will be configured via OS-FEDERATION API.
