@@ -10,6 +10,7 @@ description: |
 series:
   - bionic
   - focal
+  - groovy
 resources:
   sp-metadata:
     type: file
