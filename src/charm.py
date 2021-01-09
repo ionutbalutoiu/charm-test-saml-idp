@@ -208,12 +208,16 @@ class TestSamlIdpCharm(CharmBase):
         assertion_consumer_services = self.sp_metadata.find(
             'SPSSODescriptor', ns_map).findall(
                 'AssertionConsumerService', ns_map)
+        index = 0
+        sp_assertion_cs = []
         for acs in assertion_consumer_services:
-            if acs.get('Binding').endswith('bindings:HTTP-POST'):
-                return acs.get('Location')
-        raise Exception(
-            "Cannot find the bindings:HTTP-POST attribute in "
-            "AssertionConsumerService elements from the SP metadata xml.")
+            sp_assertion_cs.append({
+                'index': index,
+                'binding': acs.get('Binding'),
+                'location': acs.get('Location'),
+            })
+            index += 1
+        return sp_assertion_cs
 
     @property
     def sp_single_logout_service(self):
@@ -221,12 +225,16 @@ class TestSamlIdpCharm(CharmBase):
         single_logout_services = self.sp_metadata.find(
             'SPSSODescriptor', ns_map).findall(
                 'SingleLogoutService', ns_map)
+        index = 0
+        sp_single_logout_services = []
         for sls in single_logout_services:
-            if sls.get('Binding').endswith('bindings:HTTP-Redirect'):
-                return sls.get('Location')
-        raise Exception(
-            "Cannot find the bindings:HTTP-Redirect attribute in "
-            "SingleLogoutService elements from the SP metadata xml.")
+            sp_single_logout_services.append({
+                'index': index,
+                'binding': sls.get('Binding'),
+                'location': sls.get('Location'),
+            })
+            index += 1
+        return sp_single_logout_services
 
 
 if __name__ == "__main__":
