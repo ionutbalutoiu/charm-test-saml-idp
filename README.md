@@ -1,7 +1,24 @@
-# test-saml-idp
+# SimpleSAMLphp Juju Charm
 
-## Description
+This Juju charm will configure a local SAML-based IDP instance using the
+[SimpleSAMLphp](https://simplesamlphp.org/) project.
 
-This charm will setup a dummy php-based IDP using the SimpleSAMLphp project.
-This is NOT recommended to be used in production. It should be  used only
-for testing purposes.
+## Deployment
+
+The charm can be deployed with:
+
+```
+juju deploy cs:~ionutbalutoiu/test-saml-idp
+```
+
+After it is deployed, it will stay in blocked state with the message:
+```
+sp-metadata resource is not a well-formed xml file
+```
+until a valid XML SP metadata file is attached via:
+```
+juju attach-resource test-saml-idp sp-metadata=./sp-metadata.xml
+```
+
+For authentication, there is a fixed set of a user/password credentials defined
+in the charm config via `auth-user-name` and `auth-user-password`.
