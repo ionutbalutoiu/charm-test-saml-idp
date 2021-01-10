@@ -7,8 +7,8 @@ $config = [
     'datadir' => 'data/',
     'tempdir' => '/tmp/simplesaml',
 
-    'technicalcontact_name' => 'Administrator',
-    'technicalcontact_email' => 'na@example.org',
+    'technicalcontact_name' => 'root',
+    'technicalcontact_email' => 'root@localhost',
 
     'timezone' => null,
 
@@ -61,6 +61,7 @@ $config = [
     'module.enable' => [
          'exampleauth' => true,
          'saml' => true,
+         'metarefresh' => true,
          'consent' => false,
          'core' => null,
     ],

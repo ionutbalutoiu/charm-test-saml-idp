@@ -44,7 +44,7 @@ class TestSamlIdpCharm(CharmBase):
     BASE_DOWNLOAD_URL = ('https://github.com/simplesamlphp/simplesamlphp/'
                          'releases/download')
     DEST_DIR = '/var/simplesamlphp'
-    APT_PACKAGES = ['php', 'php-xml', 'php-date', 'php-mbstring',
+    APT_PACKAGES = ['php', 'php-xml', 'php-date', 'php-mbstring', 'php-curl',
                     'apache2', 'libapache2-mod-php']
     APACHE_USER = 'www-data'
     APACHE_GROUP = 'www-data'
@@ -75,7 +75,9 @@ class TestSamlIdpCharm(CharmBase):
             {
                 'template': 'simplesamlphp/config.php.j2',
                 'output': '{0}/config/config.php'.format(self.DEST_DIR),
-                'context': {}
+                'context': {
+                    'admin_password': self.config['admin-password']
+                }
             },
             {
                 'template': 'simplesamlphp/authsources.php.j2',
@@ -165,30 +167,36 @@ class TestSamlIdpCharm(CharmBase):
             logger.warning('The SP metadata is not set yet')
             return
 
-        render_configs([{
-            'template': 'simplesamlphp/saml20-sp-remote.php.j2',
-            'output': '{0}/metadata/saml20-sp-remote.php'.format(
-                self.DEST_DIR),
-            'context': {
-                'sp_entity_id': self.sp_entity_id,
-                'sp_assertion_cs': self.sp_assertion_consumer_service,
-                'sp_single_logout_service': self.sp_single_logout_service,
-            }
-        }])
+        metarefresh_bin = '{}/modules/metarefresh/bin/metarefresh.php'.format(
+            self.DEST_DIR)
+        sp_metadata_parsed = subprocess.check_output(
+            [metarefresh_bin, '--stdout', self.sp_metadata_path])
+
+        dest_file = '{0}/metadata/saml20-sp-remote.php'.format(self.DEST_DIR)
+        with open(dest_file, 'w') as f:
+            f.write('<?php\n')
+            f.write(sp_metadata_parsed.decode())
+
         service_restart('apache2')
 
         self.unit.status = self.UNIT_ACTIVE_STATUS
+
+    @property
+    def sp_metadata_path(self):
+        path = resource_get('sp-metadata')
+        if not os.path.exists(path):
+            return None
+        return path
 
     @property
     def sp_metadata(self):
         if self._sp_metadata:
             return self._sp_metadata
 
-        sp_metadata_path = resource_get('sp-metadata')
-        if not os.path.exists(sp_metadata_path):
+        if not self.sp_metadata_path:
             return None
 
-        with open(sp_metadata_path) as f:
+        with open(self.sp_metadata_path) as f:
             content = f.read()
             try:
                 self._sp_metadata = etree.fromstring(content.encode())
@@ -197,44 +205,6 @@ class TestSamlIdpCharm(CharmBase):
                     'sp-metadata resource is not a well-formed xml file')
 
         return self._sp_metadata
-
-    @property
-    def sp_entity_id(self):
-        return self.sp_metadata.get('entityID')
-
-    @property
-    def sp_assertion_consumer_service(self):
-        ns_map = self.sp_metadata.nsmap
-        assertion_consumer_services = self.sp_metadata.find(
-            'SPSSODescriptor', ns_map).findall(
-                'AssertionConsumerService', ns_map)
-        index = 0
-        sp_assertion_cs = []
-        for acs in assertion_consumer_services:
-            sp_assertion_cs.append({
-                'index': index,
-                'binding': acs.get('Binding'),
-                'location': acs.get('Location'),
-            })
-            index += 1
-        return sp_assertion_cs
-
-    @property
-    def sp_single_logout_service(self):
-        ns_map = self.sp_metadata.nsmap
-        single_logout_services = self.sp_metadata.find(
-            'SPSSODescriptor', ns_map).findall(
-                'SingleLogoutService', ns_map)
-        index = 0
-        sp_single_logout_services = []
-        for sls in single_logout_services:
-            sp_single_logout_services.append({
-                'index': index,
-                'binding': sls.get('Binding'),
-                'location': sls.get('Location'),
-            })
-            index += 1
-        return sp_single_logout_services
 
 
 if __name__ == "__main__":
