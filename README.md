@@ -30,5 +30,9 @@ be attached as a resource:
 juju attach-resource keystone-saml-mellon idp-metadata=./idp-metadata.xml
 ```
 
+The IdP web interface can be accessed at `http://<UNIT_ADDRESS>/simplesaml`.
+
 For authentication, there is a fixed set of a user/password credentials defined
-in the charm config via `auth-user-name` and `auth-user-password`.
+in the charm config via `auth-user-name` and `auth-user-password`. Or, you can
+use the default `admin` with the password given in the charm config as
+`admin-password`.
